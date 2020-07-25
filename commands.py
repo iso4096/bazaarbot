@@ -53,11 +53,27 @@ class Bot(object):
         await message.channel.send("not implemented because i'm too lazy")
     
     async def bazaar(self, message):
-        bazaar = bazaar_load(info["hypixel_api_key"])
         args = get_key(message.content[8:].lower())
+#        print(args)
+#        print(key)
+        bazaar = bazaar_load(info["hypixel_api_key"])
         try:
-            product = bazaar["products"][args]["quick_status"]
-            await message.channel.send('__{item}__\nBuy price: {buy} coins\nSell price: {sell} coins\nMargin: {margin} coins'.format(item=replacements[args], buy=round(product["buyPrice"], 2), sell=round(product["sellPrice"], 2), margin=round(product["buyPrice"]-product["sellPrice"], 2)))
+            product = bazaar["products"][args]
+            buyprices = [product["buy_summary"][0]["pricePerUnit"], product["buy_summary"][1]["pricePerUnit"]]
+            sellprices = [product["sell_summary"][0]["pricePerUnit"], product["sell_summary"][1]["pricePerUnit"]]
+            buytext = ""
+            selltext = ""
+            buypercentage = (buyprices[1]-buyprices[0])/buyprices[1]
+            sellpercentage = (sellprices[1]-sellprices[0])/sellprices[1]
+            if buypercentage >= 0:
+                buytext = "+ Buy price: {buyprice} coins ({buypercentage}%)".format(buyprice=buyprices[0], buypercentage=round(buypercentage*100, 2))
+            else:
+                buytext = "- Buy price: {buyprice} coins ({buypercentage}%)".format(buyprice=buyprices[0], buypercentage=round(buypercentage*100, 2))
+            if sellpercentage >= 0:
+                selltext = "+ Sell price: {sellprice} coins ({sellpercentage}%)".format(sellprice=sellprices[0], sellpercentage=round(sellpercentage*100, 2))
+            else:
+                selltext = "- Sell price: {sellprice} coins ({sellpercentage}%)".format(sellprice=sellprices[0], sellpercentage=round(sellpercentage*100, 2))
+            await message.channel.send('```diff\n{item}\n{buytext}\n{selltext}\nMargin: {margin} coins```'.format(item=replacements[args], buytext=buytext, selltext=selltext, margin=round(buyprices[0]-sellprices[0], 1)))
         except KeyError:
             await message.channel.send('Invalid item.')
 
