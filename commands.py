@@ -58,4 +58,4 @@ class Bot(object):
         if message.author == client.user:
             return
         
-        self.run(cmd)
+        self.run(message.content)
