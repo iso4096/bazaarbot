@@ -3,16 +3,24 @@
 import discord
 import json
 from urllib import request
+from replacements import replacements
 import os
 
 client = discord.Client()
+other_commands = json.loads(open('othercommands.json', 'r'))
+info = json.loads(open('info.json', 'r'))
+
+def bazaar_load():
+    output = json.loads(request.urlopen("https://api.hypixel.net/skyblock/bazaar?key={apikey}".format(apikey=key)).read())
+    return output
 
 class Bot(object):
-    global client
+    global client, other_commands, info
 
     def __init__(self, apikey):
         self.prefix = '$'
         self.apikey = apikey
+
     
     def list_in_str(self, a, b):
         for entry in a:
@@ -20,7 +28,7 @@ class Bot(object):
                 return True
         return False
 
-    async def cmd(self, message):
+    async def run(self, message):
         args = message.content
 
         #https://data-flair.training/blogs/python-switch-case/
@@ -30,20 +38,23 @@ class Bot(object):
         elif self.list_in_str(open('swearfilter.txt', 'r').split('\n'), args):
             return self.swear(message)
         else:
-            method_name = args.split(' ')[0]
+            method_name = args.split(' ')[0][1:]
             method = getattr(self, method_name, lambda:'c\'mon mate this isn\'t a command')
             return method(message)
 
-    def help(self, message):
-        pass
+    async def help(self, cmd):
+        await message.channel.send("not implemented because i'm too lazy")
+    
+    async def bazaar(self, cmd):
 
-    async def swear(self, message):
+
+    async def swear(self, cmd):
         await message.channel.send('>:(')
 
     #main
     @client.event
-    async def on_message(self, message):
+    async def on_message(self, cmd):
         if message.author == client.user:
             return
         
-        self.cmd(message)
+        self.run(cmd)

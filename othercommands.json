@@ -1,0 +1,7 @@
+{
+    "matches_exactly": {
+        "bad bot": ":(",
+        "good bot": ":)",
+        "ping": "pong"
+    }
+}
