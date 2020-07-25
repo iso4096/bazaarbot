@@ -1,4 +1,4 @@
-#!/usr/bin/python3.6 version 3.6
+#!/usr/bin/python3
 
 import discord
 import json
