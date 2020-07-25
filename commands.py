@@ -10,7 +10,7 @@ client = discord.Client()
 other_commands = json.loads(open('othercommands.json', 'r'))
 info = json.loads(open('info.json', 'r'))
 
-def bazaar_load():
+def bazaar_load(key):
     output = json.loads(request.urlopen("https://api.hypixel.net/skyblock/bazaar?key={apikey}".format(apikey=key)).read())
     return output
 
@@ -42,18 +42,19 @@ class Bot(object):
             method = getattr(self, method_name, lambda:'c\'mon mate this isn\'t a command')
             return method(message)
 
-    async def help(self, cmd):
+    async def help(self, message):
         await message.channel.send("not implemented because i'm too lazy")
     
-    async def bazaar(self, cmd):
+    async def bazaar(self, message):
+        bazaar = bazaar_load(info["hypixel_api_key"])
 
 
-    async def swear(self, cmd):
+    async def swear(self, message):
         await message.channel.send('>:(')
 
     #main
     @client.event
-    async def on_message(self, cmd):
+    async def on_message(self, message):
         if message.author == client.user:
             return
         
