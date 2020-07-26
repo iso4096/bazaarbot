@@ -5,6 +5,7 @@ import json
 from urllib import request
 from replacements import replacements
 import os
+import matplotlib.pyplot as plt
 
 client = discord.Client()
 other_commands = json.loads(open('othercommands.json', 'r'))
@@ -59,18 +60,18 @@ class Bot(object):
         bazaar = bazaar_load(info["hypixel_api_key"])
         try:
             product = bazaar["products"][args]
-            buyprices = [product["buy_summary"][0]["pricePerUnit"], product["buy_summary"][1]["pricePerUnit"]]
-            sellprices = [product["sell_summary"][0]["pricePerUnit"], product["sell_summary"][1]["pricePerUnit"]]
+            buyprices = [product["buy_summary"][0]["pricePerUnit"], product["buy_summary"][-1]["pricePerUnit"]]
+            sellprices = [product["sell_summary"][0]["pricePerUnit"], product["sell_summary"][-1]["pricePerUnit"]]
             buytext = ""
             selltext = ""
             buypercentage = (buyprices[1]-buyprices[0])/buyprices[1]
             sellpercentage = (sellprices[1]-sellprices[0])/sellprices[1]
             if buypercentage >= 0:
-                buytext = "+ Buy price: {buyprice} coins ({buypercentage}%)".format(buyprice=buyprices[0], buypercentage=round(buypercentage*100, 2))
+                buytext = "+ Buy price: {buyprice} coins (+{buypercentage}%)".format(buyprice=buyprices[0], buypercentage=round(buypercentage*100, 2))
             else:
                 buytext = "- Buy price: {buyprice} coins ({buypercentage}%)".format(buyprice=buyprices[0], buypercentage=round(buypercentage*100, 2))
             if sellpercentage >= 0:
-                selltext = "+ Sell price: {sellprice} coins ({sellpercentage}%)".format(sellprice=sellprices[0], sellpercentage=round(sellpercentage*100, 2))
+                selltext = "+ Sell price: {sellprice} coins (+{sellpercentage}%)".format(sellprice=sellprices[0], sellpercentage=round(sellpercentage*100, 2))
             else:
                 selltext = "- Sell price: {sellprice} coins ({sellpercentage}%)".format(sellprice=sellprices[0], sellpercentage=round(sellpercentage*100, 2))
             await message.channel.send('```diff\n{item}\n{buytext}\n{selltext}\nMargin: {margin} coins```'.format(item=replacements[args], buytext=buytext, selltext=selltext, margin=round(buyprices[0]-sellprices[0], 1)))
@@ -93,6 +94,34 @@ class Bot(object):
     
     async def swear(self, message):
         await message.channel.send('>:(')
+    
+    async def trend(self, message):
+        args = get_key(message.content[7:].lower())
+        bazaar = bazaar_load(info["hypixel_api_key"])
+        try:
+            product = bazaar["products"][args]
+            buyprices = [product["buy_summary"][i]["pricePerUnit"] for i in range(len(product["buy_summary"]))]
+            sellprices = [product["sell_summary"][i]["pricePerUnit"] for i in range(len(product["sell_summary"]))]
+            plt.title("Buy prices")
+            plt.xlabel("Order no.")
+            plt.ylabel("Buy price")
+            plt.plot(range(len(product["buy_summary"])), buyprices, "b-")
+            plt.savefig("figure.png")
+            f = discord.File("./figure.png", filename="figure.png")
+            embed = discord.Embed()
+            embed.set_image(url="attachment://figure.png")
+            await message.channel.send(file=f, embed=embed)
+            plt.title("Sell prices")
+            plt.xlabel("Order no.")
+            plt.ylabel("Sell price")
+            plt.plot(range(len(product["sell_summary"])), sellprices, "b-")
+            plt.savefig("figure.png")
+            f = discord.File("./figure.png", filename="figure.png")
+            embed = discord.Embed()
+            embed.set_image(url="attachment://figure.png")
+            await message.channel.send(file=f, embed=embed)
+        except KeyError:
+            await message.channel.send('Invalid item.')
 
     #main
     @client.event
