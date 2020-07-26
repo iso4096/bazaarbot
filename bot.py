@@ -20,6 +20,6 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    bot.handle(message)
+    await bot.handle(message)
 
 client.run(info["discord_token"])
