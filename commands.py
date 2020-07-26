@@ -36,21 +36,20 @@ class Bot(object):
                 return True
         return False
 
-    def run(self, message):
+    async def run(self, message):
         args = message.content
 
         #https://data-flair.training/blogs/python-switch-case/
 
         if not (args.startswith('$')) and self.list_in_str(open('swearfilter.txt', 'r').read().split('\n'), args) and self.list_in_str(other_commands["matches_exactly"].keys(), args):
-            return
-        elif self.list_in_str(open('swearfilter.txt', 'r').split('\n'), args):
-            return self.swear(message)
+            await None
+        elif self.list_in_str(open('swearfilter.txt', 'r').read().split('\n'), args):
+            await self.swear(message)
         elif self.list_in_str(other_commands["matches_exactly"].keys(), args):
-            return message.channel.send(other_commands["matches_exactly"][args])
+            await message.channel.send(other_commands["matches_exactly"][args])
         else:
             method_name = args.split(' ')[0][1:]
-            method = getattr(self, method_name, lambda:'c\'mon mate this isn\'t a command')
-            return method(message)
+            await getattr(self, method_name, lambda:'c\'mon mate this isn\'t a command')(message)
 
     async def help(self, message):
         await message.channel.send("not implemented because i'm too lazy")
@@ -131,4 +130,4 @@ class Bot(object):
         if message.author == client.user:
             return
         
-        self.run(message.content)
+        await self.run(message)
