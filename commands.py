@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 client = discord.Client()
-other_commands = json.loads(open('othercommands.json', 'r'))
-info = json.loads(open('info.json', 'r'))
-perms = json.loads(open('perms.json', 'r'))
+other_commands = json.loads(open('othercommands.json', 'r').read())
+info = json.loads(open('info.json', 'r').read())
+perms = json.loads(open('perms.json', 'r').read())
 
 def bazaar_load(key):
     output = json.loads(request.urlopen("https://api.hypixel.net/skyblock/bazaar?key={apikey}".format(apikey=key)).read())
@@ -41,7 +41,7 @@ class Bot(object):
 
         #https://data-flair.training/blogs/python-switch-case/
 
-        if not (args.startswith('$')) and self.list_in_str(open('swearfilter.txt', 'r').split('\n'), args) and self.list_in_str(other_commands["matches_exactly"].keys(), args):
+        if not (args.startswith('$')) and self.list_in_str(open('swearfilter.txt', 'r').read().split('\n'), args) and self.list_in_str(other_commands["matches_exactly"].keys(), args):
             return
         elif self.list_in_str(open('swearfilter.txt', 'r').split('\n'), args):
             return self.swear(message)
