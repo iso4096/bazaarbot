@@ -40,16 +40,20 @@ class Bot(object):
         args = message.content
 
         #https://data-flair.training/blogs/python-switch-case/
+        try:
+            if not (args.startswith('$')) and self.list_in_str(open('swearfilter.txt', 'r').read().split('\n'), args) and self.list_in_str(other_commands["matches_exactly"].keys(), args):
+                await None
+            elif self.list_in_str(open('swearfilter.txt', 'r').read().split('\n'), args):
+                await self.swear(message)
+            elif self.list_in_str(other_commands["matches_exactly"].keys(), args):
+                await message.channel.send(other_commands["matches_exactly"][args])
+            else:
+                method_name = args.split(' ')[0][1:]
+                await getattr(self, method_name, lambda:'c\'mon mate this isn\'t a command')(message)
+        except:
+            pass
 
-        if not (args.startswith('$')) and self.list_in_str(open('swearfilter.txt', 'r').read().split('\n'), args) and self.list_in_str(other_commands["matches_exactly"].keys(), args):
-            await None
-        elif self.list_in_str(open('swearfilter.txt', 'r').read().split('\n'), args):
-            await self.swear(message)
-        elif self.list_in_str(other_commands["matches_exactly"].keys(), args):
-            await message.channel.send(other_commands["matches_exactly"][args])
-        else:
-            method_name = args.split(' ')[0][1:]
-            await getattr(self, method_name, lambda:'c\'mon mate this isn\'t a command')(message)
+        #i have no idea why this happens
 
     async def help(self, message):
         await message.channel.send("not implemented because i'm too lazy")
