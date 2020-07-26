@@ -6,6 +6,7 @@ from urllib import request
 from replacements import replacements
 import os
 import matplotlib.pyplot as plt
+import numpy as np
 
 client = discord.Client()
 other_commands = json.loads(open('othercommands.json', 'r'))
@@ -102,6 +103,7 @@ class Bot(object):
             product = bazaar["products"][args]
             buyprices = [product["buy_summary"][i]["pricePerUnit"] for i in range(len(product["buy_summary"]))]
             sellprices = [product["sell_summary"][i]["pricePerUnit"] for i in range(len(product["sell_summary"]))]
+            plt.xticks(np.arange(min(buyprices), max(buyprices)+1, 1.0))
             plt.title("Buy prices")
             plt.xlabel("Order no.")
             plt.ylabel("Buy price")
@@ -111,6 +113,8 @@ class Bot(object):
             embed = discord.Embed()
             embed.set_image(url="attachment://figure.png")
             await message.channel.send(file=f, embed=embed)
+            plt.clf()
+            plt.xticks(np.arange(min(sellprices), max(sellprices)+1, 1.0))
             plt.title("Sell prices")
             plt.xlabel("Order no.")
             plt.ylabel("Sell price")
