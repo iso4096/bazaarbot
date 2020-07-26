@@ -26,9 +26,8 @@ def get_key(val):
 class Bot(object):
     global client, other_commands, info, perms
 
-    def __init__(self, apikey):
+    def __init__(self):
         self.prefix = '$'
-        self.apikey = apikey
 
     
     def list_in_str(self, a, b):
@@ -37,15 +36,17 @@ class Bot(object):
                 return True
         return False
 
-    async def run(self, message):
+    def run(self, message):
         args = message.content
 
         #https://data-flair.training/blogs/python-switch-case/
 
-        if not (args.startswith('$')) and self.list_in_str(open('swearfilter.txt', 'r').split('\n'), args):
+        if not (args.startswith('$')) and self.list_in_str(open('swearfilter.txt', 'r').split('\n'), args) and self.list_in_str(other_commands["matches_exactly"].keys(), args):
             return
         elif self.list_in_str(open('swearfilter.txt', 'r').split('\n'), args):
             return self.swear(message)
+        elif self.list_in_str(other_commands["matches_exactly"].keys(), args):
+            return message.channel.send(other_commands["matches_exactly"][args])
         else:
             method_name = args.split(' ')[0][1:]
             method = getattr(self, method_name, lambda:'c\'mon mate this isn\'t a command')
@@ -103,7 +104,6 @@ class Bot(object):
             product = bazaar["products"][args]
             buyprices = [product["buy_summary"][i]["pricePerUnit"] for i in range(len(product["buy_summary"]))]
             sellprices = [product["sell_summary"][i]["pricePerUnit"] for i in range(len(product["sell_summary"]))]
-            plt.xticks(np.arange(min(buyprices), max(buyprices)+1, 1.0))
             plt.title("Buy prices")
             plt.xlabel("Order no.")
             plt.ylabel("Buy price")
@@ -114,7 +114,6 @@ class Bot(object):
             embed.set_image(url="attachment://figure.png")
             await message.channel.send(file=f, embed=embed)
             plt.clf()
-            plt.xticks(np.arange(min(sellprices), max(sellprices)+1, 1.0))
             plt.title("Sell prices")
             plt.xlabel("Order no.")
             plt.ylabel("Sell price")
@@ -128,8 +127,7 @@ class Bot(object):
             await message.channel.send('Invalid item.')
 
     #main
-    @client.event
-    async def on_message(self, message):
+    async def handle(self, message):
         if message.author == client.user:
             return
         
