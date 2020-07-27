@@ -48,7 +48,7 @@ class Bot(object):
             await message.channel.send(other_commands["matches_exactly"][args])
         elif args.startswith(self.prefix):
             method_name = args.split(' ')[0][len(self.prefix):]
-            await getattr(self, method_name, lambda _:'c\'mon mate this isn\'t a command')(message)
+            await getattr(self, method_name, lambda _: message.channel.send('c\'mon mate this isn\'t a command'))(message)
 
     async def help(self, message):
         await message.channel.send("not implemented because i'm too lazy")
