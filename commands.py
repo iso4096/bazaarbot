@@ -120,6 +120,7 @@ class Bot(object):
             f = discord.File("./figure.png", filename="figure.png")
             embed = discord.Embed()
             embed.set_image(url="attachment://figure.png")
+            plt.clf()
             await message.channel.send(file=f, embed=embed)
         except KeyError:
             await message.channel.send('Invalid item.')
