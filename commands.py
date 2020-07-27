@@ -28,7 +28,7 @@ class Bot(object):
 
     def __init__(self):
         self.prefix = '$'
-
+        #until i set up the prefix system, i'm not gonna revise this
     
     def list_in_str(self, a, b):
         for entry in a:
@@ -40,26 +40,21 @@ class Bot(object):
         args = message.content
 
         #https://data-flair.training/blogs/python-switch-case/
-        try:
-            if not (args.startswith('$')) and self.list_in_str(open('swearfilter.txt', 'r').read().split('\n'), args) and self.list_in_str(other_commands["matches_exactly"].keys(), args):
-                await None
-            elif self.list_in_str(open('swearfilter.txt', 'r').read().split('\n'), args):
-                await self.swear(message)
-            elif self.list_in_str(other_commands["matches_exactly"].keys(), args):
-                await message.channel.send(other_commands["matches_exactly"][args])
-            else:
-                method_name = args.split(' ')[0][1:]
-                await getattr(self, method_name, lambda:'c\'mon mate this isn\'t a command')(message)
-        except:
-            pass
-
-        #i have no idea why this happens
+        if not (args.startswith(self.prefix)) and self.list_in_str(open('swearfilter.txt', 'r').read().split('\n'), args) and self.list_in_str(other_commands["matches_exactly"].keys(), args):
+            await None
+        elif self.list_in_str(open('swearfilter.txt', 'r').read().split('\n'), args):
+            await self.swear(message)
+        elif self.list_in_str(other_commands["matches_exactly"].keys(), args):
+            await message.channel.send(other_commands["matches_exactly"][args])
+        elif args.startswith(self.prefix):
+            method_name = args.split(' ')[0][len(self.prefix):]
+            await getattr(self, method_name, lambda:'c\'mon mate this isn\'t a command')(message)
 
     async def help(self, message):
         await message.channel.send("not implemented because i'm too lazy")
     
     async def bazaar(self, message):
-        args = get_key(message.content[8:].lower())
+        args = get_key(message.content[len(self.prefix)+7:].lower())
 #        print(args)
 #        print(key)
         bazaar = bazaar_load(info["hypixel_api_key"])
@@ -95,13 +90,13 @@ class Bot(object):
             await client.close()
     
     async def echo(self, message):
-        await message.channel.send(message.content[5:])
+        await message.channel.send(message.content[len(self.prefix)+5:])
     
     async def swear(self, message):
         await message.channel.send('>:(')
     
     async def trend(self, message):
-        args = get_key(message.content[7:].lower())
+        args = get_key(message.content[len(self.prefix)+6:].lower())
         bazaar = bazaar_load(info["hypixel_api_key"])
         try:
             product = bazaar["products"][args]
