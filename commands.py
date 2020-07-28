@@ -51,7 +51,14 @@ class Bot(object):
             await getattr(self, method_name, lambda _: message.channel.send('c\'mon mate this isn\'t a command'))(message)
 
     async def help(self, message):
-        await message.channel.send("not implemented because i'm too lazy")
+        await message.channel.send("""**HELP**
+        
+$help - shows help screen
+$bazaar - displays stats of an item in the bazaar - syntax: $bazaar [item]
+$isplayer - checks if a player is currently associated with a username - syntax: $isplayer [username]
+$close - closes discord bot instance
+$echo - echoes message - syntax: $echo [msg]
+$trend - shows line graph of item prices in the bazaar - syntax: $trend [item]""")
     
     async def bazaar(self, message):
         args = get_key(message.content[len(self.prefix)+7:].lower())
