@@ -15,8 +15,8 @@ bot = Bot()
 @client.event
 async def on_ready():
     print('Logged in as {0.user}'.format(client))
-    game = discord.Game("being developed")
-    await client.change_presence(status=discord.Status.idle, activity=game)
+    game = discord.Game("version 1.0")
+    await client.change_presence(status=discord.Status.online, activity=game)
 
 @client.event
 async def on_message(message):
