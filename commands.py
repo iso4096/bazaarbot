@@ -88,9 +88,12 @@ $trend - shows line graph of item prices in the bazaar - syntax: $trend [item]""
     async def isplayer(self, message):
         try:
             username = json.loads(request.urlopen('https://api.mojang.com/users/profiles/minecraft/{username}'.format(username=message.content[10:])).read())
-            await message.channel.send('{username} is a player.\nhttps://crafatar.com/renders/body/{uuid}?scale=5'.format(username=username['name'],uuid=username['id']))
+            await message.channel.send('{username} is a player.'.format(username=username['name']))
+            embed = discord.Embed()
+            embed.set_image(url='https://crafatar.com/renders/body/{uuid}?scale=5'.format(uuid=username['id']))
+            await message.channel.send(file=f, embed=embed)
         except:
-            await message.channel.send('{username} is not a player.'.format(username=message.content[9:]))
+            await message.channel.send('{username} is not a player.'.format(username=message.content[len(self.prefix)+8:]))
 
     async def close(self, message):
         if message.author.name in perms["$close"]:
@@ -101,6 +104,9 @@ $trend - shows line graph of item prices in the bazaar - syntax: $trend [item]""
     
     async def swear(self, message):
         await message.channel.send('>:(')
+    
+    async def settings(self, message):
+        pass #placeholder
     
     async def trend(self, message):
         args = get_key(message.content[len(self.prefix)+6:].lower())
