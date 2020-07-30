@@ -91,7 +91,7 @@ $trend - shows line graph of item prices in the bazaar - syntax: $trend [item]""
             await message.channel.send('{username} is a player.'.format(username=username['name']))
             embed = discord.Embed()
             embed.set_image(url='https://crafatar.com/renders/body/{uuid}?scale=5'.format(uuid=username['id']))
-            await message.channel.send(file=f, embed=embed)
+            await message.channel.send(embed=embed)
         except:
             await message.channel.send('{username} is not a player.'.format(username=message.content[len(self.prefix)+8:]))
 
