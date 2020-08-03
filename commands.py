@@ -40,9 +40,9 @@ class Bot(object):
         args = message.content
 
         #https://data-flair.training/blogs/python-switch-case/
-        if not (args.startswith(self.prefix)) and self.list_in_str(open('swearfilter.txt', 'r').read().split('\n'), args) and self.list_in_str(other_commands["matches_exactly"].keys(), args):
+        if not (args.startswith(self.prefix)) and self.list_in_str(open('swearfilter.txt', 'r').read().split('\n'), args.replace(" ", "")) and self.list_in_str(other_commands["matches_exactly"].keys(), args):
             await None
-        elif self.list_in_str(open('swearfilter.txt', 'r').read().split('\n'), args):
+        elif self.list_in_str(open('swearfilter.txt', 'r').read().split('\n'), args.replace(" ", "")):
             await self.swear(message)
         elif self.list_in_str(other_commands["matches_exactly"].keys(), args):
             await message.channel.send(other_commands["matches_exactly"][args])
@@ -81,19 +81,22 @@ $trend - shows line graph of item prices in the bazaar - syntax: $trend [item]""
                 selltext = "+ Sell price: {sellprice} coins (+{sellpercentage}%)".format(sellprice=sellprices[0], sellpercentage=round(sellpercentage*100, 2))
             else:
                 selltext = "- Sell price: {sellprice} coins ({sellpercentage}%)".format(sellprice=sellprices[0], sellpercentage=round(sellpercentage*100, 2))
-            await message.channel.send('```diff\n{item}\n{buytext}\n{selltext}\nMargin: {margin} coins```'.format(item=replacements[args], buytext=buytext, selltext=selltext, margin=round(buyprices[0]-sellprices[0], 1)))
+            embed = discord.Embed()
+            embed.add_field(name='bazaar', value='```diff\n{item}\n{buytext}\n{selltext}\nMargin: {margin} coins```'.format(item=replacements[args], buytext=buytext, selltext=selltext, margin=round(buyprices[0]-sellprices[0], 1)))
+            await message.channel.send(embed=embed)
         except KeyError:
             await message.channel.send('Invalid item.')
 
     async def isplayer(self, message):
+        embed = discord.Embed()
         try:
             username = json.loads(request.urlopen('https://api.mojang.com/users/profiles/minecraft/{username}'.format(username=message.content[10:])).read())
-            await message.channel.send('{username} is a player.'.format(username=username['name']))
-            embed = discord.Embed()
-            embed.set_image(url='https://crafatar.com/renders/body/{uuid}?scale=5'.format(uuid=username['id']))
+            embed.add_field(name='isplayer', value='{username} is a player.'.format(username=username['name']))
+            embed.set_image(url='https://crafatar.com/renders/body/{uuid}?scale=3'.format(uuid=username['id']))
             await message.channel.send(embed=embed)
         except:
-            await message.channel.send('{username} is not a player.'.format(username=message.content[len(self.prefix)+8:]))
+            embed.add_field(name='isplayer', value='{username} is not a player.'.format(username=message.content[len(self.prefix)+8:]))
+            await message.channel.send(embed=embed)
 
     async def close(self, message):
         if message.author.name in perms["$close"]:

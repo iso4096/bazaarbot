@@ -22,4 +22,7 @@ async def on_ready():
 async def on_message(message):
     await bot.handle(message)
 
-client.run(info["discord_token"])
+if __name__ == "__main__":
+    assert info["discord_token"] != "00000000000000000000000000000000000000000000000000000000000"
+    assert info["hypixel_api_key"] != "00000000-0000-0000-0000-000000000000"
+    client.run(info["discord_token"])
